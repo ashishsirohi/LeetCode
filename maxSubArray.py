@@ -17,8 +17,8 @@ def maxSubArray(arr, low, high):
 
 
 def maxCrossingSubArray(arr, low, mid, high):
-    left_sum = 0
-    left_index = 0
+    left_sum = arr[mid]
+    left_index = mid
     sum = arr[mid]
     i = mid - 1
     if mid == low:
@@ -33,8 +33,8 @@ def maxCrossingSubArray(arr, low, mid, high):
             i = i - 1
 
 
-    right_index = 0
-    right_sum = 0
+    right_index = mid + 1
+    right_sum = arr[mid+1]
     sum = arr[mid+1]
     i = mid + 2
     if mid + 1 == high:
@@ -50,9 +50,12 @@ def maxCrossingSubArray(arr, low, mid, high):
 
     return [left_index, right_index, left_sum+right_sum]
 
-#print maxCrossingSubArray([2, -3, 22, -1, 10, 3, 6, -8, 10, -23, 15], 0, 5, 10)
+#print maxCrossingSubArray([2, -3, 22, -1, -10, -30, 6, -8, 10, -23, 15], 0, 5, 10)
+#print maxCrossingSubArray([2, -3, 22, -1, -10, -30], 0, 2, 5)
+#print maxSubArray([2, -3, 22, -1, -10, -30], 0, 5)
 #print maxCrossingSubArray([2, -3], 0, 0, 1)
-left_index, right_index, sum = maxSubArray([2, -3, 22, -1, -10, -30, 6, -8, 10, -23, 15], 0, 10)
-print left_index
-print right_index
-print sum
+print maxSubArray([2, -3, 22, -1, -10, 30, 6, -8, 10, -23, 15], 0, 10)
+#left_index, right_index, sum = maxSubArray([2, -3, 22, -1, -10, -30, 6, -8, 10, -23, 15], 0, 10)
+#print left_index
+#print right_index
+#print sum
