@@ -1,55 +1,50 @@
-class Solution(object):
-    def longestPalindrome(self, s):
-        """
-        :type s: str
-        :rtype: str
-        """
-
-        max_len = 0
-        ll = []
-        x = 0
-
-        while x < len(s):
-            if s[x] not in ll:
-                ll.append(s[x])
-                x = x + 1
-            else:
-                if len(ll) >= max_len:
-                    max_len = len(ll)
-                i = ll.index(s[x])
-                del ll[0:i + 1]
-                ll.append(s[x])
-                x = x + 1
-
-        if len(ll) > max_len:
-            max_len = len(ll)
-
-        return max_len
-
-    def is_palindrom(s):
-        l = len(s)
-        if l%2 == 0:
-            x=0
-            count = 0
-            while x < l/2:
-                if s[x] == s[l-x-1]:
-                    count += 1
-                x = x + 1
-
-            if count == l/2:
-                return True
-
+def longestPalindrome(s):
+    if len(s) == 1:
+        return s
+    if len(s) == 2:
+        if s[0] == s[1]:
+            return s
         else:
-            x = 0
-            count = 0
-            while x < (l-1) / 2:
-                if s[x] == s[l - x - 1]:
-                    count += 1
-                x = x+1
+            return s[0]
+    c = 0
+    for x in s:
+        if s[0] == x:
+            c = c + 1
+        else:
+            break
+    if c == len(s):
+        return s
+    k = 1
+    ll = []
+    res = ""
+    while k < len(s):
+        ll.append(res)
+        res = s[k]
+        i = k - 1
+        j = k + 1
+        f = 0
+        while i>=0 and j<len(s):
+            if s[i] == s [j]:
+                res = s[i] + res + s[j]
+                i = i - 1
+                j = j + 1
+                f = 1
+            elif s[k] == s[j] and f == 0:
+                res = res + s[j]
+                j = j + 1
+            elif s[k] == s[i] and f == 0:
+                res = res + s[i]
+                i = i - 1
+            else:
+                break
+        k = k + 1
 
-            if count == (l-1) / 2:
-                return True
+    max = 0
+    out = ""
+    for x in ll:
+        if len(x) > max:
+            max = len(x)
+            out = x
+    return out
 
-        return False
-
-    print is_palindrom("abcbba")
+print longestPalindrome("aaaa")
