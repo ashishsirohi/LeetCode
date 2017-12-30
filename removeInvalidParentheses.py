@@ -1,3 +1,4 @@
+import Queue
 class Solution(object):
     def removeInvalidParentheses(self, s):
         """
@@ -5,56 +6,64 @@ class Solution(object):
         :rtype: List[str]
         """
         def isValidString(s):
-            i = 0
-            myStack = []
-            while i < len(s):
-                if s[i] == ")" and len(myStack)>0:
-                    if myStack[-1] == "(":
-                        myStack.pop()
-                    else:
-                        myStack.append(s[i])
-                elif s[i] == "(" or s[i] == ")":
-                    myStack.append(s[i])
+            count = 0
+            for i in range(len(s)):
+                c = s[i]
+                if (c == '('):
+                    count += 1
+                if (c == ')'):
+                    if (count == 0):
+                        return False
+                    count -= 1
 
-                i += 1
-            if len(myStack) == 0:
-                return True
-            else:
-                return False
+            return count == 0
 
         result = []
         if isValidString(s):
             result.append(s)
             return result
 
-        counter = 0
-        for i in range(len(s)):
-            if s[i] == "(":
-                counter += 1
-            elif s[i] == ")":
-                counter -= 1
+        myQueue = Queue.Queue()
+        visitedSet = set()
+        myQueue.put(s)
+        visitedSet.add(s)
+        tmp = []
+        minFlag = False
+        while not myQueue.empty():
+            currString = myQueue.get()
 
-        if counter < 0:
-            s_copy = s
-            for i in range(len(s_copy)):
-                if s_copy[i] == ")":
-                    tmpS = s_copy[:i]+s_copy[i+1:]
-                    if tmpS not in result and isValidString(tmpS):
-                        result.append(tmpS)
-        if counter > 0:
-            s_copy = s
-            for i in range(len(s_copy)):
-                if s_copy[i] == "(":
-                    tmpS = s_copy[:i] + s_copy[i + 1:]
-                    if tmpS not in result and isValidString(tmpS):
-                        result.append(tmpS)
 
-        if len(result) == 0 and not isValidString(s):
-            res = s.replace("(", "")
-            result.append(res.replace(")", ""))
+            if isValidString(currString):
+                result.append(currString)
+                minFlag = True
+                l = len(currString)
+
+            if minFlag:
+                if l > len(currString):
+                    break
+                else:
+                    continue
+
+            removedChar = ""
+            for i in range(len(currString)):
+                if currString[i] != "(" and currString[i] != ")":
+                    continue
+
+                if currString[i] == removedChar:
+                    continue
+
+                if currString[i] == ")" and removedChar == "(":
+                    removedChar = ""
+                    continue
+                tmpS = currString[:i]+currString[i+1:]
+                removedChar = currString[i]
+                if tmpS not in visitedSet:
+                    tmp.append(tmpS)
+                    visitedSet.add(tmpS)
+                    myQueue.put(tmpS)
 
         return result
 
 
 sol = Solution()
-print sol.removeInvalidParentheses(")()(")
+print sol.removeInvalidParentheses("(())))))()(()()x()(")
