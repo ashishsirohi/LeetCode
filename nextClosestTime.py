@@ -9,4 +9,4 @@ def nextClosestTime(time):
         if all([int(x) in digits for x in h + m]):
             return h + ':' + m
 
-print nextClosestTime("22:42")
+print nextClosestTime("23:59")

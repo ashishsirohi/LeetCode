@@ -15,4 +15,4 @@ def nextClosestTime(time):
         if len(currDigit) == 0:
             return h + ':' + m
 
-print nextClosestTime("04:55")
+print nextClosestTime("23:59")
