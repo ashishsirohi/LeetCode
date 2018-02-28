@@ -6,64 +6,126 @@ class Solution(object):
         :type wordList: List[str]
         :rtype: List[List[str]]
         """
+        wordSet = set(wordList)
+        if endWord not in wordSet:
+            return []
 
-        def getSuccessor(word, WordList):
+        def getSuccessor(word, wordSet):
             successors = []
-            for w in WordList:
-                count = 0
-                for i in range(len(word)):
-                    if word[i] != w[i]:
-                        count += 1
-                if count == 1:
-                    # yield w
-                    successors.append(w)
-
+            for i in range(len(word)):
+                for c in 'abcdefghijklmnopqrstuvwxyz':
+                    next_word = word[:i] + c + word[i + 1:]
+                    if next_word in wordSet:
+                        successors.append(next_word)
             return successors
 
-        result = []
-        myStack = []
         import Queue
-        state = (beginWord, [beginWord])
-        # myStack.append(state)
+        from collections import deque
+        state = (beginWord, 1, [[beginWord]])
+        path = deque()
+        path.append(endWord)
+        state2 = (endWord, 1, [path])
         myQueue = Queue.Queue()
+        myQueue2 = Queue.Queue()
         myQueue.put(state)
-        visited = []
+        myQueue2.put(state2)
         shortest = float('inf')
-        while not myQueue.empty():
-            # currWord, currPath = myStack.pop()
-            currWord, currPath = myQueue.get()
+        visitedDict = {}
+        visitedDict2 = {}
+        visitedDict[beginWord] = ([[beginWord]], 1)
+        visitedDict2[endWord] = ([path], 1)
+        result = set()
+        while not myQueue.empty() and not myQueue2.empty():
+            #print visitedDict
+            currWord, length, currPath = myQueue.get()
+            currWord2, length2, currPath2 = myQueue2.get()
+            #print currWord
 
-            if currWord == endWord:
-                if len(currPath) <= shortest:
-                    result.append(currPath)
-                    shortest = len(currPath)
-                else:
-                    break
-                continue
+            try:
+                val = visitedDict2[currWord][1]
+                if length + val <= shortest:
+                    shortest = length + val
+                    result.add(tuple(currPath + list(visitedDict2[currWord][0])))
 
-            if len(currPath) > shortest:
-                break
+            except:
+                pass
 
-            """if currWord not in visited:
-                visited.append(currWord)
-            else:
-                continue"""
+            try:
+                val = visitedDict[currWord2][1]
+                if length2 + val <= shortest:
+                    shortest = length2 + val
+                    result.add(tuple(visitedDict[currWord2][0] + list(currPath2)))
 
-            successors = getSuccessor(currWord, wordList)
-            for s in successors:
-                if s not in currPath:
-                    # visited.append(s)
-                    path = list(currPath)
-                    path.append(s)
-                    myQueue.put((s, path))
-                    # myStack.append((s, path))
+            except:
+                pass
 
-        return result
+            if length < shortest:
+                successors = getSuccessor(currWord, wordSet)
+                for s in successors:
+                    if s not in visitedDict:
+                        try:
+                            val = visitedDict2[s][1]
+                            if length + val <= shortest:
+                                shortest = length + val
+                                for l in visitedDict2[s][0]:
+                                    for m in currPath:
+                                        result.add(tuple(m + list(l)))
 
+                        except:
+                            newP = []
+                            for l in currPath:
+                                newPath = list(l)
+                                newPath.append(s)
+                                newP.append(newPath)
+                            visitedDict[s] = (newP, length + 1)
+                            myQueue.put((s, length + 1, newP))
+                            #print s
+                    elif length + 1 <= visitedDict[s][1]:
+                        newPath = list(currPath)
+                        newPath.append(s)
+                        visitedDict[s][0].append(newPath)
+                        myQueue.put((s, length + 1, newPath))
+                        # print s
+
+            if length2 < shortest:
+                successors = getSuccessor(currWord2, wordSet)
+                for s in successors:
+                    if s not in visitedDict2:
+                        try:
+                            val = visitedDict[s][1]
+                            if length2 + val <= shortest:
+                                shortest = length2 + val
+                                for m in currPath2:
+                                    for l in visitedDict[s][0]:
+                                        result.add(tuple(l + list(m)))
+
+                        except:
+                            newP = []
+                            for l in currPath2:
+                                newPath = deque(l)
+                                newPath.appendleft(s)
+                                newP.append(newPath)
+                            visitedDict2[s] = (newP, length2 + 1)
+                            myQueue2.put((s, length2 + 1, newP))
+                            # print visitedDict2
+                    elif length2 + 1 <= visitedDict2[s][1]:
+                        for l in currPath2:
+                            newPath = deque(l)
+                            newPath.appendleft(s)
+                            visitedDict2[s][0].append(newPath)
+                        # print visitedDict2
+
+
+        if shortest == float('inf'):
+            return []
+        final = []
+        for res in result:
+            final.append(list(res))
+        return final
 
 s = Solution()
-beginWord = "hit"
-endWord = "cog"
-wordList = ["hot","dot","dog","lot","log","cog","cit","cot"]
+beginWord = "hot"
+endWord = "dot"
+wordList = ["hot","dot","dog"]
 
 print s.findLadders(beginWord, endWord, wordList)
